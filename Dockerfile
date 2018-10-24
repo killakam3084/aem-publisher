@@ -1,24 +1,21 @@
 # DOCKER-VERSION 1.0.1
 FROM iillmaticc/aem-base
-MAINTAINER vzfg38
+MAINTAINER iillmaticc
+
+# Pulling this from remote quantumdownloads is slow
+ONBUILD ADD cq-6.2.jar  /aem/cq-6.2.jar
+ONBUILD ADD license.properties /aem/license.properties
 
 # Extracts AEM
-WORKDIR /aem
-COPY cq-6.2.jar /aem/cq-6.2.jar
-RUN java -Xmx2048M -jar cq-6.2.jar -unpack -r publish -p 4503
-COPY license.properties /aem/license.properties
+ONBUILD WORKDIR /aem
+ONBUILD RUN java -Xmx2048M -jar cq-6.2.jar -unpack -r publisher -p 4503
 
 
 # Installs AEM
-RUN python aemInstaller.py -i cq-6.2.jar -r publish -p 4503
+ONBUILD RUN python aemInstaller.py -i cq-6.2.jar -r publisher -p 4503
 
-WORKDIR /aem/crx-quickstart/bin
-
-#Replaces the port within the quickstart file with the standard publish port
-
-ONBUILD RUN cp quickstart quickstart.original
-ONBUILD RUN cat quickstart.original | sed "s|4502|4503|g" > quickstart
-
+# Add .zip(s) to install post unpacking
+ONBUILD RUN mkdir -p /aem/crx-quickstart/install
 
 EXPOSE 4503 8000
 ENTRYPOINT ["/aem/crx-quickstart/bin/quickstart"]
