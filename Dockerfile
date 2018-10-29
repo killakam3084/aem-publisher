@@ -8,10 +8,10 @@ ONBUILD ADD license.properties /aem/license.properties
 
 # Extracts AEM
 ONBUILD WORKDIR /aem
-ONBUILD RUN java -Xmx2048M -jar cq-6.2.jar -unpack -r publisher -p 4503
+ONBUILD RUN java -Xmx2048M -jar cq-6.2.jar -unpack -r publish -p 4503
 
 # Installs AEM
-ONBUILD RUN python aemInstaller.py -i cq-6.2.jar -r publisher -p 4503
+ONBUILD RUN python aemInstaller.py -i cq-6.2.jar -r publish -p 4503
 
 # Add .zip(s) to install post unpacking
 ONBUILD RUN mkdir -p /aem/crx-quickstart/install
